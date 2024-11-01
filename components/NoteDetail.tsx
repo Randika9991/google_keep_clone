@@ -27,7 +27,6 @@ const NoteDetail = ({ visible, onClose, note }) => {
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
 
-
     const handleColorChange = (selectedColor) => {
         setColor(selectedColor);
         setShowColorPalette(false);  // Close color palette after selecting a color
@@ -49,7 +48,7 @@ const NoteDetail = ({ visible, onClose, note }) => {
             console.log({ title, content, color, image,date });
             setTitle('');
             setContent('');
-            setColor('#FFFFFF');
+            setColor('#F8F8F8');
             setImage(null);
 
             onClose();
@@ -105,38 +104,47 @@ const NoteDetail = ({ visible, onClose, note }) => {
                         <MaterialIcons name="palette" size={24} color="black" />
                     </TouchableOpacity>
 
+
+
+
+
+
+                    {showColorPalette && (
+                        <View style={styles.colorPalette} >
+                            {['#FFF5BA', '#F5A9B8', '#B4E197', '#A7C7E7','#F8F8F8'].map((c) => (
+                                <TouchableOpacity
+                                    key={c}
+                                    style={[styles.colorOption, { backgroundColor: c }]}
+                                    onPress={() => handleColorChange(c)}
+                                />
+                            ))}
+                        </View>
+                    )}
+
+                    {showPicker && (
+                        <DateTimePicker
+                            value={date}
+                            mode="date"          // Options: 'date', 'time', or 'datetime'
+                            display="default"     // Styles: 'default', 'spinner', 'calendar', 'clock' (Android-specific)
+                            onChange={onChange}
+                        />
+                    )}
+
                     <TouchableOpacity onPress={handlePickImage} style={styles.iconButton}>
                         <MaterialIcons name="photo" size={24} color="black" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => showDatePicker()} style={styles.iconButton}>
+                        <FontAwesome name="bell" size={24} color="black" />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={handleSaveNote} style={styles.iconButton}>
                         <FontAwesome name="save" size={20} color="black" />
                     </TouchableOpacity>
-
-                    <Button onPress={showDatePicker} title="Show Date Picker" />
                 </View>
 
                 {/* Color Palette */}
-                {showColorPalette && (
-                    <View style={styles.colorPalette}>
-                        {['#FFD700', '#FF6347', '#90EE90', '#ADD8E6','#FFFFFF'].map((c) => (
-                            <TouchableOpacity
-                                key={c}
-                                style={[styles.colorOption, { backgroundColor: c }]}
-                                onPress={() => handleColorChange(c)}
-                            />
-                        ))}
-                    </View>
-                )}
 
-                {showPicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="date"          // Options: 'date', 'time', or 'datetime'
-                        display="default"     // Styles: 'default', 'spinner', 'calendar', 'clock' (Android-specific)
-                        onChange={onChange}
-                    />
-                )}
             </View>
         </Modal>
     );
@@ -221,16 +229,14 @@ const styles = StyleSheet.create({
     },
     colorPalette: {
         flexDirection: 'row',
-        padding: 5,
-        backgroundColor:Colors.dark.background,
+        padding: 4,
+        right: 5,
+
         justifyContent: 'space-evenly',
         borderRadius: 20,
 
         borderColor:Colors.pastelBackgrounds.pastelGreen,
-        borderTopWidth: 5,
-        borderLeftWidth: 5,
-        borderRightWidth: 5,
-        borderBottomWidth: 5,
+
     },
 });
 
