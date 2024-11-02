@@ -48,21 +48,29 @@ const NoteDetail = ({ visible, onClose, note }) => {
     const handleSaveNote = async () => {
         if (title.trim() !== '' && content.trim() !== '') {
             console.log({title, content, color, image, date});
+            // console.log("Scheduling notification for date:", date);
+            //
+
+            const now = new Date();
+            console.log("Current local time:", now.toLocaleString());
+            console.log("Scheduling notification for date:", date.toLocaleString());
+
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "⏰ Alarm",
                     body: "Your alarm is ringing!",
                 },
-                trigger: date,
+                trigger: date, // Use the trigger date
             });
 
 
-            // setTitle('');
-            // setContent('');
-            // setColor('#F8F8F8');
-            // setImage(null);
-            //
-            // onClose();
+            setTitle('');
+            setContent('');
+            setColor('#F8F8F8');
+            setImage(null);
+            setDate(now);
+            setShowColorPalette(false);
+            onClose();
         } else {
             console.log("Please fill out both title and content fields.");
         }
@@ -99,9 +107,6 @@ const NoteDetail = ({ visible, onClose, note }) => {
                 Alert.alert("Invalid time", "Please select a time in the future.");
                 return;
             }
-
-
-
             Alert.alert("Alarm Set", `Alarm set for ${newDate.toLocaleString()}`);
         } else {
             // If user cancels the time picker, close it
