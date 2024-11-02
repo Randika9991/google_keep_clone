@@ -8,9 +8,41 @@ import home from "../app/pages/home";
 import {useFonts} from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+import * as Notifications from 'expo-notifications';
+
+
 const stack = createNativeStackNavigator()
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+
 export default function index() {
+
+  useEffect(() => {
+    // Request permissions directly through expo-notifications
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission for notifications is not granted!');
+      }
+    })();
+
+    // Set up notification received listener
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      console.log("Notification received:", notification);
+    });
+
+    // Clean up listener on unmount
+    return () => {
+      notificationListener.remove();
+    };
+  }, []);
 
   const [fontsLoaded] = useFonts({
     'GloriaHallelujah': require('../assets/fonts/GloriaHallelujah-Regular.ttf')

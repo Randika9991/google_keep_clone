@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Colors } from '../constants/Colors';
 import {
     Modal,
     StyleSheet,
@@ -9,13 +8,14 @@ import {
     TextInput,
     TouchableOpacity,
     Image,
-    Platform, Button
+    Alert
 } from 'react-native';
 
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import * as Notifications from 'expo-notifications';
+import {Colors} from "../constants/Colors";
 
 const NoteDetail = ({ visible, onClose, note }) => {
     const [title, setTitle] = useState('');
@@ -24,12 +24,14 @@ const NoteDetail = ({ visible, onClose, note }) => {
     const [image, setImage] = useState<string | null>(null);
     const [showColorPalette, setShowColorPalette] = useState(false);
 
+
     const [date, setDate] = useState(new Date());
-    const [showPicker, setShowPicker] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
 
     const handleColorChange = (selectedColor) => {
         setColor(selectedColor);
-        setShowColorPalette(false);  // Close color palette after selecting a color
+        setShowColorPalette(false);
     };
 
     const handlePickImage = async () => {
@@ -43,28 +45,68 @@ const NoteDetail = ({ visible, onClose, note }) => {
         }
     };
 
-    const handleSaveNote = () => {
+    const handleSaveNote = async () => {
         if (title.trim() !== '' && content.trim() !== '') {
-            console.log({ title, content, color, image,date });
-            setTitle('');
-            setContent('');
-            setColor('#F8F8F8');
-            setImage(null);
+            console.log({title, content, color, image, date});
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: "⏰ Alarm",
+                    body: "Your alarm is ringing!",
+                },
+                trigger: date,
+            });
 
-            onClose();
+
+            // setTitle('');
+            // setContent('');
+            // setColor('#F8F8F8');
+            // setImage(null);
+            //
+            // onClose();
         } else {
             console.log("Please fill out both title and content fields.");
         }
     };
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowPicker(Platform.OS === 'ios'); // iOS keeps picker open
-        setDate(currentDate);
+    // Open the date picker first when scheduling an alarm
+    const scheduleAlarm = () => {
+        setShowDatePicker(true);
     };
 
-    const showDatePicker = () => {
-        setShowPicker(true);
+    // Handle date selection
+    const onDateChange = (event, selectedDate) => {
+        if (event.type === 'set' && selectedDate) {
+            setDate(selectedDate);
+            // Close the date picker and immediately open the time picker
+            setShowDatePicker(false);
+            setShowTimePicker(true);
+        } else {
+            // If user cancels the date picker, close it
+            setShowDatePicker(false);
+        }
+    };
+    // Handle time selection
+    const onTimeChange = async (event, selectedTime) => {
+        if (event.type === 'set' && selectedTime) {
+            const newDate = new Date(date);
+            newDate.setHours(selectedTime.getHours());
+            newDate.setMinutes(selectedTime.getMinutes());
+            setDate(newDate);
+            setShowTimePicker(false);
+
+            const now = new Date();
+            if (newDate <= now) {
+                Alert.alert("Invalid time", "Please select a time in the future.");
+                return;
+            }
+
+
+
+            Alert.alert("Alarm Set", `Alarm set for ${newDate.toLocaleString()}`);
+        } else {
+            // If user cancels the time picker, close it
+            setShowTimePicker(false);
+        }
     };
 
     return (
@@ -104,13 +146,8 @@ const NoteDetail = ({ visible, onClose, note }) => {
                         <MaterialIcons name="palette" size={24} color="black" />
                     </TouchableOpacity>
 
-
-
-
-
-
                     {showColorPalette && (
-                        <View style={styles.colorPalette} >
+                        <View style={styles.colorPalette}>
                             {['#FFF5BA', '#F5A9B8', '#B4E197', '#A7C7E7','#F8F8F8'].map((c) => (
                                 <TouchableOpacity
                                     key={c}
@@ -121,20 +158,15 @@ const NoteDetail = ({ visible, onClose, note }) => {
                         </View>
                     )}
 
-                    {showPicker && (
-                        <DateTimePicker
-                            value={date}
-                            mode="date"          // Options: 'date', 'time', or 'datetime'
-                            display="default"     // Styles: 'default', 'spinner', 'calendar', 'clock' (Android-specific)
-                            onChange={onChange}
-                        />
-                    )}
-
-                    <TouchableOpacity onPress={handlePickImage} style={styles.iconButton}>
+                    <TouchableOpacity
+                        onPress={handlePickImage}
+                        style={styles.iconButton}
+                        accessibilityLabel="Pick an image"
+                    >
                         <MaterialIcons name="photo" size={24} color="black" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => showDatePicker()} style={styles.iconButton}>
+                    <TouchableOpacity onPress={scheduleAlarm} style={styles.iconButton}>
                         <FontAwesome name="bell" size={24} color="black" />
                     </TouchableOpacity>
 
@@ -143,8 +175,23 @@ const NoteDetail = ({ visible, onClose, note }) => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Color Palette */}
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={date}
+                        mode="date"
+                        display="default"
+                        onChange={onDateChange}
+                    />
+                )}
 
+                {showTimePicker && (
+                    <DateTimePicker
+                        value={date}
+                        mode="time"
+                        display="default"
+                        onChange={onTimeChange}
+                    />
+                )}
             </View>
         </Modal>
     );
