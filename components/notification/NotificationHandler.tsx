@@ -1,6 +1,7 @@
 // NotificationHandler.js
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
+import {Alert} from "react-native";
 
 const NotificationHandler = () => {
     useEffect(() => {
@@ -8,7 +9,9 @@ const NotificationHandler = () => {
         (async () => {
             const { status } = await Notifications.requestPermissionsAsync();
             if (status !== 'granted') {
-                alert('Permission for notifications is not granted!');
+                Alert.alert('Permission required', 'Enable notifications in settings');
+            } else {
+                console.log('Notification permission granted:', status);
             }
         })();
 
@@ -17,9 +20,14 @@ const NotificationHandler = () => {
             console.log("Notification received:", notification);
         });
 
+        const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log("Notification response:", response);
+        });
+
         // Clean up listener on unmount
         return () => {
             notificationListener.remove();
+            responseListener.remove();
         };
     }, []);
 

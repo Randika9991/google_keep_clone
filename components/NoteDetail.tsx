@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {
     Modal,
     StyleSheet,
@@ -16,18 +16,25 @@ import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Notifications from 'expo-notifications';
 import {Colors} from "../constants/Colors";
+import DateTimeComponent from "./dateTime/DateTimeComponent";
+
+import { AudioContext } from '../app/context/Provider';
 
 const NoteDetail = ({ visible, onClose, note }) => {
+
+    const {} = useContext(AudioContext);
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [color, setColor] = useState('#FFFFFF');
     const [image, setImage] = useState<string | null>(null);
     const [showColorPalette, setShowColorPalette] = useState(false);
 
-
     const [date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+
+    const [timeDateVisible, setTimeDateVisible] = useState(false);
 
     const handleColorChange = (selectedColor) => {
         setColor(selectedColor);
@@ -48,29 +55,29 @@ const NoteDetail = ({ visible, onClose, note }) => {
     const handleSaveNote = async () => {
         if (title.trim() !== '' && content.trim() !== '') {
             console.log({title, content, color, image, date});
-            // console.log("Scheduling notification for date:", date);
-            //
 
-            const now = new Date();
-            console.log("Current local time:", now.toLocaleString());
-            console.log("Scheduling notification for date:", date.toLocaleString());
+            const dateString = String(date).trim();
+            if (dateString !== '') {
+                const now = new Date();
+                console.log("Current local time:", now.toLocaleString());
+                console.log("Scheduling notification for date:", date.toLocaleString());
 
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: "⏰ Alarm",
-                    body: "Your alarm is ringing!",
-                },
-                trigger: date, // Use the trigger date
-            });
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: "⏰ Alarm",
+                        body: "Your alarm is ringing!",
+                    },
+                    trigger: date, // Use the trigger date
+                });
+            }
 
-
-            setTitle('');
-            setContent('');
-            setColor('#F8F8F8');
-            setImage(null);
-            setDate(now);
-            setShowColorPalette(false);
-            onClose();
+            // setTitle('');
+            // setContent('');
+            // setColor('#F8F8F8');
+            // setImage(null);
+            // setDate(now);
+            // setShowColorPalette(false);
+            // onClose();
         } else {
             console.log("Please fill out both title and content fields.");
         }
@@ -79,39 +86,7 @@ const NoteDetail = ({ visible, onClose, note }) => {
     // Open the date picker first when scheduling an alarm
     const scheduleAlarm = () => {
         setShowDatePicker(true);
-    };
-
-    // Handle date selection
-    const onDateChange = (event, selectedDate) => {
-        if (event.type === 'set' && selectedDate) {
-            setDate(selectedDate);
-            // Close the date picker and immediately open the time picker
-            setShowDatePicker(false);
-            setShowTimePicker(true);
-        } else {
-            // If user cancels the date picker, close it
-            setShowDatePicker(false);
-        }
-    };
-    // Handle time selection
-    const onTimeChange = async (event, selectedTime) => {
-        if (event.type === 'set' && selectedTime) {
-            const newDate = new Date(date);
-            newDate.setHours(selectedTime.getHours());
-            newDate.setMinutes(selectedTime.getMinutes());
-            setDate(newDate);
-            setShowTimePicker(false);
-
-            const now = new Date();
-            if (newDate <= now) {
-                Alert.alert("Invalid time", "Please select a time in the future.");
-                return;
-            }
-            Alert.alert("Alarm Set", `Alarm set for ${newDate.toLocaleString()}`);
-        } else {
-            // If user cancels the time picker, close it
-            setShowTimePicker(false);
-        }
+        setTimeDateVisible(true);
     };
 
     return (
@@ -180,21 +155,15 @@ const NoteDetail = ({ visible, onClose, note }) => {
                     </TouchableOpacity>
                 </View>
 
-                {showDatePicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="date"
-                        display="default"
-                        onChange={onDateChange}
-                    />
-                )}
-
-                {showTimePicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="time"
-                        display="default"
-                        onChange={onTimeChange}
+                {timeDateVisible && (
+                    <DateTimeComponent
+                        showDatePicker={showDatePicker}
+                        setShowDatePicker={setShowDatePicker}
+                        showTimePicker={showTimePicker}
+                        setShowTimePicker={setShowTimePicker}
+                        date={date}
+                        setDate={setDate}
+                        setTimeDateVisible={setTimeDateVisible}
                     />
                 )}
             </View>
