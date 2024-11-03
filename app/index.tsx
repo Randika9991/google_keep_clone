@@ -10,7 +10,6 @@ import * as SplashScreen from "expo-splash-screen";
 
 import {AudioProvider} from './context/Provider'
 
-
 import * as Notifications from 'expo-notifications';
 import NotificationHandler from "../components/notification/NotificationHandler";
 
@@ -45,7 +44,6 @@ export default function index() {
 
   return (
       <NavigationContainer independent={true}>
-
         <NotificationHandler />
         <AudioProvider>
         <stack.Navigator initialRouteName="Loding-Page">

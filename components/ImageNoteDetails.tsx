@@ -1,65 +1,35 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {
     Modal,
     StyleSheet,
-    Text,
     View,
     TouchableWithoutFeedback,
-    TextInput,
-    TouchableOpacity,
     Image,
-    Alert
+    TextInput,
+    Text,
+    TouchableOpacity
 } from 'react-native';
+import { Colors } from "../constants/Colors";
+import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
 
-import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from "expo-image-picker";
 import * as Notifications from 'expo-notifications';
-import {Colors} from "../constants/Colors";
 import DateTimeComponent from "./dateTime/DateTimeComponent";
 
-import { context } from '../app/context/Provider';
-// import now = jest.now;
-
-const NoteDetail = ({ visible, onClose, note }) => {
-
-    const {} = useContext(context);
-
-    const [noteState, setNoteState] = useState({
-        title: '',
-        content: '',
-        color: '#FFFFFF',
-    });
-
+const ImageNoteDetails = ({ visible, onClose, image ,setImage ,handlePickImage}) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [color, setColor] = useState('#FFFFFF');
-    const [image, setImage] = useState<string | null>(null);
+
     const [showColorPalette, setShowColorPalette] = useState(false);
     const [date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [timeDateVisible, setTimeDateVisible] = useState(false);
 
-    const handleColorChange = (selectedColor) => {
-        setColor(selectedColor);
-        setShowColorPalette(false);
-    };
-
-    const handlePickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-        });
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
-    };
-
     const handleSaveNote = async () => {
         if (title.trim() !== '') {
-            setNoteState({ title: title, content: content, color: color });
-
+            //new part
             console.log({title, content, color, image, date});
             const dateString = String(date).trim();
             const now = new Date();
@@ -94,12 +64,16 @@ const NoteDetail = ({ visible, onClose, note }) => {
         setTimeDateVisible(true);
     };
 
+    const handleColorChange = (selectedColor) => {
+        setColor(selectedColor);
+        setShowColorPalette(false);
+    };
+
     return (
         <Modal transparent={true} visible={visible} animationType="slide">
-            <TouchableWithoutFeedback onPress={() => onClose()}>
+            <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.modalBg} />
             </TouchableWithoutFeedback>
-
             <View style={styles.modal}>
                 <View style={styles.headerContainer}>
                     <Text style={styles.headerText}>Note</Text>
@@ -158,19 +132,20 @@ const NoteDetail = ({ visible, onClose, note }) => {
                     <TouchableOpacity onPress={handleSaveNote} style={styles.iconButton}>
                         <FontAwesome name="save" size={20} color="black" />
                     </TouchableOpacity>
+
+                    {timeDateVisible && (
+                        <DateTimeComponent
+                            showDatePicker={showDatePicker}
+                            setShowDatePicker={setShowDatePicker}
+                            showTimePicker={showTimePicker}
+                            setShowTimePicker={setShowTimePicker}
+                            date={date}
+                            setDate={setDate}
+                            setTimeDateVisible={setTimeDateVisible}
+                        />
+                    )}
                 </View>
 
-                {timeDateVisible && (
-                    <DateTimeComponent
-                        showDatePicker={showDatePicker}
-                        setShowDatePicker={setShowDatePicker}
-                        showTimePicker={showTimePicker}
-                        setShowTimePicker={setShowTimePicker}
-                        date={date}
-                        setDate={setDate}
-                        setTimeDateVisible={setTimeDateVisible}
-                    />
-                )}
             </View>
         </Modal>
     );
@@ -264,4 +239,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NoteDetail;
+export default ImageNoteDetails;

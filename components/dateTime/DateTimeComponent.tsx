@@ -3,6 +3,7 @@ import {Modal, View, TouchableWithoutFeedback, StyleSheet, Alert} from 'react-na
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Colors} from "../../constants/Colors";
 
+
 const DateTimeComponent = ({ visible, showDatePicker,setShowDatePicker,setShowTimePicker, showTimePicker, onClose,date,setDate,setTimeDateVisible }) => {
     const onDateChange = (event, selectedDate) => {
         if (event.type === 'set' && selectedDate) {

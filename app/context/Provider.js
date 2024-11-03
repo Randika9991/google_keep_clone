@@ -1,15 +1,15 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { Alert, View, Text, StyleSheet } from 'react-native';
 
-export const AudioContext = createContext();
+export const context = createContext();
 
 export const AudioProvider = ({ children }) => {
     const [title, setTitle] = useState('');
 
     return (
-        <AudioContext.Provider value={{title, setTitle}}>
+        <context.Provider value={{title, setTitle}}>
             {children}
-        </AudioContext.Provider>
+        </context.Provider>
     );
 };
 
