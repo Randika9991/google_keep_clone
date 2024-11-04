@@ -35,11 +35,8 @@ export default function explore() {
 
     return (
         <View style={styles.container}>
-            {/* Static Header */}
             <View style={styles.headerContainer}>
-
                 <Text style={styles.headerText}>Note</Text>
-
             </View>
 
             {/* Main Content */}
@@ -108,7 +105,7 @@ const styles = StyleSheet.create({
         width: '40%',
     },
     content: {
-        marginTop: 120, // to place content below the header
+        marginTop: 120,
         padding: 20,
     },
     input: {

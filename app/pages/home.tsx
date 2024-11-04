@@ -3,18 +3,17 @@ import { View, TextInput, Image, StyleSheet,TouchableOpacity } from 'react-nativ
 import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '../../constants/Colors';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import NoteDetail from "../../components/NoteDetail"; // Import icons
+import NoteDetail from "../../components/NoteDetail";
+import ImageNoteDetails from "../../components/ImageNoteDetails"; // Import icons
 
 export default function AddNote() {
     const [search, searchTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [color, setColor] = useState('#FFFFFF');
     const [selectedText, setSelectedText] = useState(false);
     const [detailVisible, setDetailVisible] = useState(false);
 
-    const handleColorChange = (selectedColor) => {
-        setColor(selectedColor);
-    };
+    const [imageClickText, setImageClickText] = useState(false);
+    const [imageClickTextVisible, setImageClickTextVisible] = useState(false);
+    const [image, setImage] = useState<string | null>(null);
 
     const handleBannerPress = () => {
         setSelectedText(true);
@@ -28,7 +27,9 @@ export default function AddNote() {
             quality: 1,
         });
         if (!result.canceled) {
-            // Add image handling here if needed
+            setImage(result.assets[0].uri);
+            setImageClickText(true);
+            setImageClickTextVisible(true);
         }
     };
 
@@ -55,7 +56,6 @@ export default function AddNote() {
 
             {/* Main Content */}
             <View style={styles.content}>
-
             </View>
 
             <View style={styles.bottomBarRightSide}>
@@ -71,6 +71,7 @@ export default function AddNote() {
                 <TouchableOpacity onPress={() => {/* Handle pencil icon action */}}>
                     <FontAwesome name="pencil" size={24} color="black" />
                 </TouchableOpacity>
+
                 <TouchableOpacity onPress={handlePickImage}>
                     <MaterialIcons name="photo" size={24} color="black" />
                 </TouchableOpacity>
@@ -80,6 +81,16 @@ export default function AddNote() {
                     visible={detailVisible}
                     onClose={() => setDetailVisible(false)}
                     note={selectedText}  // Pass the selected note
+                />
+            )}
+
+            {imageClickText && (
+                <ImageNoteDetails
+                    visible={imageClickTextVisible}
+                    onClose={() => setImageClickTextVisible(false)}// Pass the selected note
+                    image={image}
+                    setImage={setImage}
+                    handlePickImage={handlePickImage}
                 />
             )}
         </View>

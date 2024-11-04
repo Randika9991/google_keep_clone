@@ -8,7 +8,20 @@ import home from "../app/pages/home";
 import {useFonts} from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+import {AudioProvider} from './context/Provider'
+
+import * as Notifications from 'expo-notifications';
+import NotificationHandler from "../components/notification/NotificationHandler";
+
 const stack = createNativeStackNavigator()
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function index() {
 
@@ -31,6 +44,8 @@ export default function index() {
 
   return (
       <NavigationContainer independent={true}>
+        <NotificationHandler />
+        <AudioProvider>
         <stack.Navigator initialRouteName="Loding-Page">
           <stack.Screen name='Loding-page' component={LodingPage} options={{
             headerShown: false,
@@ -42,30 +57,7 @@ export default function index() {
             headerShown: false,
           }}/>
         </stack.Navigator>
+        </AudioProvider>
       </NavigationContainer>
   )
 }
-
-
-
-
-//add font style in this code use anywhere add style inside
-// style={{fontFamily: 'GloriaHallelujah'}}
-
-// const [fontsLoaded] = useFonts({
-//     'GloriaHallelujah': require('../assets/fonts/GloriaHallelujah-Regular.ttf')
-// });
-//
-// useEffect(() => {
-//     async function prepare() {
-//         if (!fontsLoaded) {
-//             await SplashScreen.preventAutoHideAsync();
-//         } else {
-//             await SplashScreen.hideAsync();
-//         }
-//     }
-//     prepare();
-// }, [fontsLoaded]);
-//
-// if (!fontsLoaded) return null;
-// Renders nothing until the font is loaded
