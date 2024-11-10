@@ -18,17 +18,11 @@ import {Colors} from "../constants/Colors";
 import DateTimeComponent from "./dateTime/DateTimeComponent";
 
 import { context } from '../app/context/Provider';
-// import now = jest.now;
-
+import PhotoCameraComponent from "./imagePhoto/PhotoCameraComponent";
+import TakePhoto from "./imagePhoto/TakePhoto";
 const NoteDetail = ({ visible, onClose, note }) => {
 
-    const {} = useContext(context);
-
-    const [noteState, setNoteState] = useState({
-        title: '',
-        content: '',
-        color: '#FFFFFF',
-    });
+    const {handleSaveNoteProvider} = useContext(context);
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -39,6 +33,29 @@ const NoteDetail = ({ visible, onClose, note }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [timeDateVisible, setTimeDateVisible] = useState(false);
+
+    const [imageClickTextVisible, setImageClickTextVisible] = useState(false);
+    const [showImageCamara, setShowImageCamara] = useState(false);
+
+    const [ShowPhoto, setShowPhoto] = useState(false);
+    const [photoUri, setPhotoUri] = useState(null);
+
+    const imageOrCamera = () => {
+        setShowImageCamara(true);
+    };
+
+    const pictureSet = () => {
+        setShowImageCamara(false)
+        setImageClickTextVisible(true);
+        setShowPhoto(false)
+        setImage(null);
+    };
+
+    const actionCamera = () =>{
+        setShowPhoto(true);
+        setPhotoUri(null);
+        // console.log("cdsvd");
+    }
 
     const handleColorChange = (selectedColor) => {
         setColor(selectedColor);
@@ -53,38 +70,50 @@ const NoteDetail = ({ visible, onClose, note }) => {
         });
         if (!result.canceled) {
             setImage(result.assets[0].uri);
+            setShowImageCamara(false)
+            setPhotoUri(null);
+
         }
     };
 
     const handleSaveNote = async () => {
-        if (title.trim() !== '') {
-            setNoteState({ title: title, content: content, color: color });
+        if (title.trim() == '') {
 
-            console.log({title, content, color, image, date});
-            const dateString = String(date).trim();
-            const now = new Date();
-            if (dateString !== '') {
-                console.log("Current local time:", now.toLocaleString());
-                console.log("Scheduling notification for date:", date.toLocaleString());
-
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: "⏰ Alarm",
-                        body: "Your alarm is ringing!",
-                    },
-                    trigger: date, // Use the trigger date
-                });
-            }
-
-            setTitle('');
-            setContent('');
-            setColor('#F8F8F8');
-            setImage(null);
-            setDate(now);
-            setShowColorPalette(false);
-            onClose();
         } else {
-            console.log("Please fill out both title and content fields.");
+            try {
+
+                handleSaveNoteProvider({ title, content, color, image, date, photoUri });
+
+                const dateString = String(date).trim();
+                const now = new Date();
+                if (dateString !== '') {
+                    console.log("Current local time:", now.toLocaleString());
+                    console.log("Scheduling notification for date:", date.toLocaleString());
+
+                    await Notifications.scheduleNotificationAsync({
+                        content: {
+                            title: "⏰ Alarm",
+                            body: "Your alarm is ringing!",
+                        },
+                        trigger: date, // Use the trigger date
+                    });
+                }
+                // Reset fields after successful save
+                setTitle('');
+                setContent('');
+                setColor('#F8F8F8');
+                setImage(null);
+                setDate(now);
+                setShowColorPalette(false);
+                setPhotoUri(null)
+                onClose();
+
+                // Show a success alert (optional)
+                Alert.alert("Success", "Note saved successfully!");
+            } catch (error) {
+                console.error('Error saving note:', error);
+                Alert.alert("Error", "Failed to save the note. Please try again.");
+            }
         }
     };
 
@@ -119,7 +148,8 @@ const NoteDetail = ({ visible, onClose, note }) => {
                         multiline
                         style={[styles.input, { backgroundColor: color, height: 100 }]}
                     />
-                    {image && <Image source={{ uri: image }} style={styles.image} />}
+                    {image  && <Image source={{ uri: image  }} style={styles.image} />}
+                    {photoUri  && <Image source={{ uri: photoUri  }} style={styles.image} />}
                 </View>
 
                 {/* Static Bottom Bar */}
@@ -144,7 +174,7 @@ const NoteDetail = ({ visible, onClose, note }) => {
                     )}
 
                     <TouchableOpacity
-                        onPress={handlePickImage}
+                        onPress={imageOrCamera}
                         style={styles.iconButton}
                         accessibilityLabel="Pick an image"
                     >
@@ -160,6 +190,13 @@ const NoteDetail = ({ visible, onClose, note }) => {
                     </TouchableOpacity>
                 </View>
 
+                <PhotoCameraComponent
+                    visible={showImageCamara}
+                    onClose={() => setShowImageCamara(false)}// Pass the selected note
+                    handlePickImage={handlePickImage}
+                    actionCamera={actionCamera}
+                />
+
                 {timeDateVisible && (
                     <DateTimeComponent
                         showDatePicker={showDatePicker}
@@ -171,6 +208,14 @@ const NoteDetail = ({ visible, onClose, note }) => {
                         setTimeDateVisible={setTimeDateVisible}
                     />
                 )}
+
+                <TakePhoto
+                    visible={ShowPhoto}
+                    onClose={() => setShowPhoto(false)}// Pass the selected note
+                    photoUri={photoUri}
+                    setPhotoUri={setPhotoUri}
+                    handleConfirmPhoto={pictureSet}
+                />
             </View>
         </Modal>
     );

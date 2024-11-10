@@ -5,7 +5,6 @@ import {Alert} from "react-native";
 
 const NotificationHandler = () => {
     useEffect(() => {
-        // Request permissions for notifications
         (async () => {
             const { status } = await Notifications.requestPermissionsAsync();
             if (status !== 'granted') {
@@ -24,14 +23,13 @@ const NotificationHandler = () => {
             console.log("Notification response:", response);
         });
 
-        // Clean up listener on unmount
         return () => {
             notificationListener.remove();
             responseListener.remove();
         };
     }, []);
 
-    return null; // This component does not render anything
+    return null;
 };
 
 export default NotificationHandler;

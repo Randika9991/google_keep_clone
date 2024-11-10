@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
     Modal,
     StyleSheet,
@@ -7,7 +7,7 @@ import {
     Image,
     TextInput,
     Text,
-    TouchableOpacity
+    TouchableOpacity, Alert
 } from 'react-native';
 import { Colors } from "../constants/Colors";
 import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
@@ -15,8 +15,11 @@ import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as Notifications from 'expo-notifications';
 import DateTimeComponent from "./dateTime/DateTimeComponent";
+import {context} from "../app/context/Provider";
 
-const ImageNoteDetails = ({ visible, onClose, image ,setImage ,handlePickImage}) => {
+const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePickImage,setPhotoUri}) => {
+    const {handleSaveNoteProvider} = useContext(context);
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [color, setColor] = useState('#FFFFFF');
@@ -28,33 +31,42 @@ const ImageNoteDetails = ({ visible, onClose, image ,setImage ,handlePickImage})
     const [timeDateVisible, setTimeDateVisible] = useState(false);
 
     const handleSaveNote = async () => {
-        if (title.trim() !== '') {
-            //new part
-            console.log({title, content, color, image, date});
-            const dateString = String(date).trim();
-            const now = new Date();
-            if (dateString !== '') {
-                console.log("Current local time:", now.toLocaleString());
-                console.log("Scheduling notification for date:", date.toLocaleString());
+        if (title.trim() == '') {
 
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: "⏰ Alarm",
-                        body: "Your alarm is ringing!",
-                    },
-                    trigger: date, // Use the trigger date
-                });
-            }
-
-            setTitle('');
-            setContent('');
-            setColor('#F8F8F8');
-            setImage(null);
-            setDate(now);
-            setShowColorPalette(false);
-            onClose();
         } else {
-            console.log("Please fill out both title and content fields.");
+            try {
+                handleSaveNoteProvider({ title, content, color, image, date, photoUri });
+
+                const dateString = String(date).trim();
+                const now = new Date();
+                if (dateString !== '') {
+                    console.log("Current local time:", now.toLocaleString());
+                    console.log("Scheduling notification for date:", date.toLocaleString());
+
+                    await Notifications.scheduleNotificationAsync({
+                        content: {
+                            title: "⏰ Alarm",
+                            body: "Your alarm is ringing!",
+                        },
+                        trigger: date, // Use the trigger date
+                    });
+                }
+                // Reset fields after successful save
+                setTitle('');
+                setContent('');
+                setColor('#F8F8F8');
+                setImage(null);
+                setDate(now);
+                setShowColorPalette(false);
+                setPhotoUri(null)
+                onClose();
+
+                // Show a success alert (optional)
+                Alert.alert("Success", "Note saved successfully!");
+            } catch (error) {
+                console.error('Error saving note:', error);
+                Alert.alert("Error", "Failed to save the note. Please try again.");
+            }
         }
     };
 
@@ -94,6 +106,7 @@ const ImageNoteDetails = ({ visible, onClose, image ,setImage ,handlePickImage})
                         style={[styles.input, { backgroundColor: color, height: 100 }]}
                     />
                     {image && <Image source={{ uri: image }} style={styles.image} />}
+                    {photoUri && <Image source={{ uri: photoUri }} style={styles.image} />}
                 </View>
 
                 {/* Static Bottom Bar */}

@@ -1,23 +1,56 @@
-import React, { useState } from 'react';
-import { View, TextInput, Image, StyleSheet,TouchableOpacity } from 'react-native';
+import React, {useContext, useState} from 'react';
+import {
+    View,
+    TextInput,
+    Image,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ScrollView
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '../../constants/Colors';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import NoteDetail from "../../components/NoteDetail";
-import ImageNoteDetails from "../../components/ImageNoteDetails"; // Import icons
+import ImageNoteDetails from "../../components/ImageNoteDetails";
+import PhotoCameraComponent from "../../components/imagePhoto/PhotoCameraComponent";
+import TakePhoto from "../../components/imagePhoto/TakePhoto"; // Import icons
+import { context } from '../context/Provider';
 
 export default function AddNote() {
+    const {valueSave} = useContext(context);
+
     const [search, searchTitle] = useState('');
     const [selectedText, setSelectedText] = useState(false);
     const [detailVisible, setDetailVisible] = useState(false);
 
-    const [imageClickText, setImageClickText] = useState(false);
     const [imageClickTextVisible, setImageClickTextVisible] = useState(false);
     const [image, setImage] = useState<string | null>(null);
+    const [showImageCamara, setShowImageCamara] = useState(false);
+
+    const [ShowPhoto, setShowPhoto] = useState(false);
+    const [photoUri, setPhotoUri] = useState(null);
+
+    const actionCamera = () =>{
+        setShowPhoto(true);
+        setPhotoUri(null);
+        // setImageClickTextVisible(true);
+    }
 
     const handleBannerPress = () => {
         setSelectedText(true);
         setDetailVisible(true); // Show the modal when the banner is pressed
+    };
+
+    const imageOrCamera = () => {
+        setShowImageCamara(true);
+    };
+
+    const pictureSet = () => {
+        setImage(null);
+        setShowImageCamara(false)
+        setImageClickTextVisible(true);
+        setShowPhoto(false)
     };
 
     const handlePickImage = async () => {
@@ -28,10 +61,15 @@ export default function AddNote() {
         });
         if (!result.canceled) {
             setImage(result.assets[0].uri);
-            setImageClickText(true);
+            setShowImageCamara(false)
             setImageClickTextVisible(true);
+            setPhotoUri(null);
         }
     };
+
+    function handleValueClick(id) {
+        console.log(id);
+    }
 
     return (
         <View style={styles.container}>
@@ -53,8 +91,33 @@ export default function AddNote() {
                     />
                 </View>
             </View>
+            <ScrollView style={styles.scrollStyle}>
+                <View style={styles.notesContainer}>
+                    {valueSave && Array.isArray(valueSave) && valueSave.length > 0 ? (
+                        valueSave.map((note) => {
+                            console.log('Note:', note._id);  // Log the individual note object
+                            return (
+                                <TouchableOpacity
+                                    key={`${note.title}-${note.someOtherProperty}`}
+                                    style={styles.noteItem}
+                                    onPress={() => handleValueClick(note._id)}
+                                >
+                                    {(note.image || note.photoUri) && (
+                                        <Image source={{ uri: note.image || note.photoUri }} style={styles.image} />
+                                    )}
+                                    <Text style={styles.showText}>
+                                        {note.title}  {/* Render each note's title */}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })
+                    ) : (
+                        <Text>No notes available</Text>  // Fallback if valueSave is empty or not an array
+                    )}
+                </View>
+            </ScrollView>
 
-            {/* Main Content */}
+
             <View style={styles.content}>
             </View>
 
@@ -72,7 +135,7 @@ export default function AddNote() {
                     <FontAwesome name="pencil" size={24} color="black" />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={handlePickImage}>
+                <TouchableOpacity onPress={imageOrCamera}>
                     <MaterialIcons name="photo" size={24} color="black" />
                 </TouchableOpacity>
             </View>
@@ -83,16 +146,28 @@ export default function AddNote() {
                     note={selectedText}  // Pass the selected note
                 />
             )}
-
-            {imageClickText && (
-                <ImageNoteDetails
-                    visible={imageClickTextVisible}
-                    onClose={() => setImageClickTextVisible(false)}// Pass the selected note
-                    image={image}
-                    setImage={setImage}
-                    handlePickImage={handlePickImage}
-                />
-            )}
+            <ImageNoteDetails
+                visible={imageClickTextVisible}
+                onClose={() => setImageClickTextVisible(false)}// Pass the selected note
+                image={image}
+                photoUri={photoUri}
+                setPhotoUri={setPhotoUri}
+                setImage={setImage}
+                handlePickImage={imageOrCamera}
+            />
+            <PhotoCameraComponent
+                visible={showImageCamara}
+                onClose={() => setShowImageCamara(false)}// Pass the selected note
+                handlePickImage={handlePickImage}
+                actionCamera={actionCamera}
+            />
+            <TakePhoto
+                visible={ShowPhoto}
+                onClose={() => setShowPhoto(false)}// Pass the selected note
+                photoUri={photoUri}
+                setPhotoUri={setPhotoUri}
+                handleConfirmPhoto={pictureSet}
+            />
         </View>
     );
 }
@@ -103,8 +178,9 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.pastelBackgrounds.pastelWhite,
     },
     headerContainer: {
+        zIndex: 3,
         height: 80,
-        top:20,
+        top: 20,
         backgroundColor: Colors.pastelBackgrounds.pastelWhite,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -119,10 +195,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
-        borderTopWidth: 5,
-        borderBottomWidth: 5,
-        borderLeftWidth: 5,
-        borderRightWidth: 5,
+        borderWidth: 5,
     },
     plusLogo: {
         width: 30,
@@ -140,26 +213,54 @@ const styles = StyleSheet.create({
         width: '70%',
     },
     content: {
-        marginTop: 100, // Adjust content placement below header
+        marginTop: 18, // Adjust content placement below header
         padding: 20,
+    },
+    modalText:{
+        position: 'absolute',
+        top: -5,
+        right: 180,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        paddingHorizontal: 0,
+    },
+    TakePhotoBar: {
+        position: 'absolute',
+        bottom: 0,
+        top: 15,
+        right: 200,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        paddingHorizontal: 0,
+    },
+    TakeImageBar: {
+        position: 'absolute',
+        bottom: 0,
+        top: 70,
+        right: 200,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        paddingHorizontal: 0,
     },
     bottomBar: {
         position: 'absolute',
         bottom: 0,
         width: '100%',
         height: 60,
-        backgroundColor:  Colors.pastelBackgrounds.pastelPurple,
+        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
         shadowColor: '#000',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingHorizontal: 20,
-
         shadowOpacity: 0.2,
         shadowRadius: 5,
         borderTopWidth: 5,
     },
-    bottomBarRightSide:{
+    bottomBarRightSide: {
         zIndex: 2,
         position: 'absolute',
         borderRadius: 15,
@@ -172,10 +273,37 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingHorizontal: 20,
+        borderWidth: 5,
+    },
+    notesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        padding: 10,
+        justifyContent: 'space-between',
+    },
+    noteItem: {
+        width: '48%', // This ensures two notes per row
+        marginBottom: 10,
+        padding: 10,
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
 
-        borderTopWidth: 5,
-        borderBottomWidth: 5,
-        borderLeftWidth: 5,
-        borderRightWidth: 5,
+    },
+    image: {
+        width: '100%',
+        height: 150,  // Adjust size based on your design
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    scrollStyle: {
+        width: '100%',
+        height: 150,  // Adjust size based on your design
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    showText:{
+        width: '100%', // Adjust size based on your design
+        borderRadius: 8,
+        marginBottom: 10,
     }
 });
