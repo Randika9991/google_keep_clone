@@ -16,6 +16,8 @@ import ImageNoteDetails from "../../components/ImageNoteDetails";
 import PhotoCameraComponent from "../../components/imagePhoto/PhotoCameraComponent";
 import TakePhoto from "../../components/imagePhoto/TakePhoto"; // Import icons
 import { context } from '../context/Provider';
+import {red} from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import ShowNoteClick from "../../components/imagePhoto/ShowNoteClick";
 
 export default function AddNote() {
     const {valueSave} = useContext(context);
@@ -30,6 +32,11 @@ export default function AddNote() {
 
     const [ShowPhoto, setShowPhoto] = useState(false);
     const [photoUri, setPhotoUri] = useState(null);
+
+    const [ShowClickNote, setShowClickNote] = useState(false);
+    // const [photoUri, setPhotoUri] = useState(null);
+
+    const [allValueShow, setAllValueShow] = useState([]);
 
     const actionCamera = () =>{
         setShowPhoto(true);
@@ -67,9 +74,22 @@ export default function AddNote() {
         }
     };
 
-    function handleValueClick(id) {
-        console.log(id);
+    function handleValueClick(id, title, content, color, image, date, photoUri) {
+        setShowClickNote(true);
+        const noteData = {
+            id: id,
+            title: title.trim(),
+            content: content.trim(),
+            color: color,
+            image: image,
+            date: date,
+            photoUri: photoUri,
+            completed: false
+        };
+
+        setAllValueShow(noteData); // Pass the full note data
     }
+
 
     return (
         <View style={styles.container}>
@@ -95,27 +115,32 @@ export default function AddNote() {
                 <View style={styles.notesContainer}>
                     {valueSave && Array.isArray(valueSave) && valueSave.length > 0 ? (
                         valueSave.map((note) => {
-                            console.log('Note:', note._id);  // Log the individual note object
                             return (
                                 <TouchableOpacity
                                     key={`${note.title}-${note.someOtherProperty}`}
-                                    style={styles.noteItem}
-                                    onPress={() => handleValueClick(note._id)}
+                                    style={[
+                                        styles.noteItem,
+                                        (!note.image && !note.photoUri) && { backgroundColor: note.color } // Apply color if no image or photoUri
+                                    ]}
+                                    onPress={() => handleValueClick(note._id,note.title,note.content,note.color,note.image,note.date,note.photoUri)}
                                 >
-                                    {(note.image || note.photoUri) && (
+                                    {(note.image || note.photoUri) ? (
                                         <Image source={{ uri: note.image || note.photoUri }} style={styles.image} />
+                                    ) : (
+                                        // If there's no image or photoUri, just render the note title with color background
+                                        <View style={styles.showText}>
+                                            <Text style={styles.showText}>{note.title}</Text>
+                                        </View>
                                     )}
-                                    <Text style={styles.showText}>
-                                        {note.title}  {/* Render each note's title */}
-                                    </Text>
                                 </TouchableOpacity>
                             );
                         })
                     ) : (
-                        <Text>No notes available</Text>  // Fallback if valueSave is empty or not an array
+                        <Text>No notes available</Text> // Fallback if valueSave is empty or not an array
                     )}
                 </View>
             </ScrollView>
+
 
 
             <View style={styles.content}>
@@ -146,6 +171,12 @@ export default function AddNote() {
                     note={selectedText}  // Pass the selected note
                 />
             )}
+            <ShowNoteClick
+                visible={ShowClickNote}
+                onClose={() => setShowClickNote(false)}// Pass the selected note
+                allValueShow={allValueShow}
+            />
+
             <ImageNoteDetails
                 visible={imageClickTextVisible}
                 onClose={() => setImageClickTextVisible(false)}// Pass the selected note
@@ -278,16 +309,15 @@ const styles = StyleSheet.create({
     notesContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        padding: 10,
+        padding: 20,
         justifyContent: 'space-between',
     },
     noteItem: {
         width: '48%', // This ensures two notes per row
         marginBottom: 10,
         padding: 10,
-        backgroundColor: '#ffffff',
         borderRadius: 10,
-
+        borderWidth: 2,
     },
     image: {
         width: '100%',
