@@ -20,7 +20,7 @@ import * as Notifications from "expo-notifications";
 import {context} from "../../app/context/Provider";
 
 const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
-    const {handleUpdateNoteProvider} = useContext(context);
+    const {handleUpdateNoteProvider,handleDeleteNote,isConnected} = useContext(context);
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -84,40 +84,49 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
         if (title.trim() == '') {
 
         } else {
-            try {
-                const id = allValueShow.id;
-                handleUpdateNoteProvider({id,title, content, color, image, date, photoUri });
+            if (isConnected) {
+                try {
+                    const id = allValueShow.id;
+                    handleUpdateNoteProvider({id,title, content, color, image, date, photoUri });
 
-                const dateString = String(date).trim();
-                const now = new Date();
-                if (dateString !== '') {
-                    console.log("Current local time:", now.toLocaleString());
-                    console.log("Scheduling notification for date:", date.toLocaleString());
+                    const dateString = String(date).trim();
+                    const now = new Date();
+                    if (dateString !== '') {
+                        console.log("Current local time:", now.toLocaleString());
+                        console.log("Scheduling notification for date:", date.toLocaleString());
 
-                    await Notifications.scheduleNotificationAsync({
-                        content: {
-                            title: "⏰ Alarm",
-                            body: "Your alarm is ringing!",
-                        },
-                        trigger: date, // Use the trigger date
-                    });
+                        await Notifications.scheduleNotificationAsync({
+                            content: {
+                                title: "⏰ Alarm",
+                                body: "Your alarm is ringing!",
+                            },
+                            trigger: date, // Use the trigger date
+                        });
+                    }
+                    // Reset fields after successful save
+                    setTitle('');
+                    setContent('');
+                    setColor('#F8F8F8');
+                    setImage(null);
+                    setDate(now);
+                    setShowColorPalette(false);
+                    setPhotoUri(null)
+                    onClose();
+
+                    // Show a success alert (optional)
+                } catch (error) {
+                    console.error('Error saving note:', error);
+                    Alert.alert("Error", "Failed to save the note. Please try again.");
                 }
-                // Reset fields after successful save
-                setTitle('');
-                setContent('');
-                setColor('#F8F8F8');
-                setImage(null);
-                setDate(now);
-                setShowColorPalette(false);
-                setPhotoUri(null)
-                onClose();
-
-                // Show a success alert (optional)
-                Alert.alert("Success", "Note saved successfully!");
-            } catch (error) {
-                console.error('Error saving note:', error);
-                Alert.alert("Error", "Failed to save the note. Please try again.");
             }
+        }
+    };
+
+    const handleDeleteNoteAction = (id) => {
+        if (isConnected) {
+            handleDeleteNote({id});
+            onClose();
+            setShowColorPalette(false);
         }
     };
 
@@ -136,6 +145,7 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
                         <View style={styles.headerContainer}>
                             <Text style={styles.headerText}>Note</Text>
                         </View>
+
                         <View style={[styles.content]}>
                             <TextInput
                                 placeholder="Title"
@@ -180,6 +190,10 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
                                 accessibilityLabel="Pick an image"
                             >
                                 <MaterialIcons name="photo" size={24} color="black" />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={()=>handleDeleteNoteAction(allValueShow.id)}  style={styles.iconButton}>
+                                <FontAwesome name="trash" size={20} color="black" />
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={handleSaveNote} style={styles.iconButton}>

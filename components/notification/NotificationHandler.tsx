@@ -1,4 +1,3 @@
-// NotificationHandler.js
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import {Alert} from "react-native";

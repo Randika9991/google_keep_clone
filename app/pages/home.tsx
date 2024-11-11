@@ -86,10 +86,8 @@ export default function AddNote() {
             photoUri: photoUri,
             completed: false
         };
-
         setAllValueShow(noteData); // Pass the full note data
     }
-
 
     return (
         <View style={styles.container}>
@@ -111,6 +109,7 @@ export default function AddNote() {
                     />
                 </View>
             </View>
+
             <ScrollView style={styles.scrollStyle}>
                 <View style={styles.notesContainer}>
                     {valueSave && Array.isArray(valueSave) && valueSave.length > 0 ? (
@@ -140,8 +139,6 @@ export default function AddNote() {
                     )}
                 </View>
             </ScrollView>
-
-
 
             <View style={styles.content}>
             </View>
