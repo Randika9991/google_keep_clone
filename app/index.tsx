@@ -1,17 +1,19 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LodingPage from "../components/pages/loadingPage/LodingPage";
 import LoginScreen from "../components/pages/loginScreen/LoginScreen";
+import RegisterScreen from "../components/pages/loginScreen/Register";
 import home from "../app/pages/home";
 import {useFonts} from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-
 import {AudioProvider} from './context/Provider'
-
 import * as Notifications from 'expo-notifications';
 import NotificationHandler from "../components/notification/NotificationHandler";
+
+import { auth } from '../components/fireBase/firebaseConfig'; // Import your Firebase config
+import { onAuthStateChanged } from 'firebase/auth';
 
 const stack = createNativeStackNavigator()
 
@@ -25,28 +27,32 @@ Notifications.setNotificationHandler({
 
 export default function index() {
 
-  const [fontsLoaded] = useFonts({
-    'GloriaHallelujah': require('../assets/fonts/GloriaHallelujah-Regular.ttf')
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    async function prepare() {
-      if (!fontsLoaded) {
-        await SplashScreen.preventAutoHideAsync();
+    // Listen to authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setIsAuthenticated(true); // User is logged in
       } else {
-        await SplashScreen.hideAsync();
+        setIsAuthenticated(false); // User is logged out
       }
-    }
-    prepare();
-  }, [fontsLoaded]);
+    });
 
-  if (!fontsLoaded) return null;
+    // Cleanup listener
+    return () => unsubscribe();
+  }, []);
+
+  if (isAuthenticated === null) {
+    // Optionally, you can return a loading screen here
+    return null;
+  }
 
   return (
       <NavigationContainer independent={true}>
         <NotificationHandler />
         <AudioProvider>
-        <stack.Navigator initialRouteName="Loding-Page">
+        <stack.Navigator initialRouteName={isAuthenticated ? 'home' : 'Loding-Page'}>
           <stack.Screen name='Loding-page' component={LodingPage} options={{
             headerShown: false,
           }}/>
@@ -54,8 +60,13 @@ export default function index() {
             headerShown: false,
           }}/>
           <stack.Screen name='home' component={home} options={{
-            headerShown: false,
+            headerShown : false,
           }}/>
+          <stack.Screen
+              name="RegisterPage"
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+          />
         </stack.Navigator>
         </AudioProvider>
       </NavigationContainer>
