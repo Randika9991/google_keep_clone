@@ -22,21 +22,17 @@ import ShowNoteClick from "../../components/imagePhoto/ShowNoteClick";
 export default function AddNote() {
     const {valueSave} = useContext(context);
 
-    const [search, searchTitle] = useState('');
+    const [search, setSearch] = useState('');
     const [selectedText, setSelectedText] = useState(false);
     const [detailVisible, setDetailVisible] = useState(false);
-
     const [imageClickTextVisible, setImageClickTextVisible] = useState(false);
     const [image, setImage] = useState<string | null>(null);
     const [showImageCamara, setShowImageCamara] = useState(false);
-
     const [ShowPhoto, setShowPhoto] = useState(false);
     const [photoUri, setPhotoUri] = useState(null);
-
     const [ShowClickNote, setShowClickNote] = useState(false);
-    // const [photoUri, setPhotoUri] = useState(null);
-
     const [allValueShow, setAllValueShow] = useState([]);
+
 
     const actionCamera = () =>{
         setShowPhoto(true);
@@ -89,6 +85,12 @@ export default function AddNote() {
         setAllValueShow(noteData); // Pass the full note data
     }
 
+    const filteredNotes = valueSave && Array.isArray(valueSave) ?
+        valueSave.filter(note =>
+            note.title.toLowerCase().includes(search.toLowerCase())
+        )
+        : [];
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -100,7 +102,7 @@ export default function AddNote() {
                     <TextInput
                         placeholder="Search your notes"
                         value={search}
-                        onChangeText={searchTitle}
+                        onChangeText={setSearch}
                         style={styles.searchInput}
                     />
                     <Image
@@ -112,30 +114,27 @@ export default function AddNote() {
 
             <ScrollView style={styles.scrollStyle}>
                 <View style={styles.notesContainer}>
-                    {valueSave && Array.isArray(valueSave) && valueSave.length > 0 ? (
-                        valueSave.map((note) => {
-                            return (
-                                <TouchableOpacity
-                                    key={`${note.title}-${note.someOtherProperty}`}
-                                    style={[
-                                        styles.noteItem,
-                                        (!note.image && !note.photoUri) && { backgroundColor: note.color } // Apply color if no image or photoUri
-                                    ]}
-                                    onPress={() => handleValueClick(note._id,note.title,note.content,note.color,note.image,note.date,note.photoUri)}
-                                >
-                                    {(note.image || note.photoUri) ? (
-                                        <Image source={{ uri: note.image || note.photoUri }} style={styles.image} />
-                                    ) : (
-                                        // If there's no image or photoUri, just render the note title with color background
-                                        <View style={styles.showText}>
-                                            <Text style={styles.showText}>{note.title}</Text>
-                                        </View>
-                                    )}
-                                </TouchableOpacity>
-                            );
-                        })
+                    {filteredNotes.length > 0 ? (
+                        filteredNotes.map((note) => (
+                            <TouchableOpacity
+                                key={note._id}
+                                style={[
+                                    styles.noteItem,
+                                    (!note.image && !note.photoUri) && { backgroundColor: note.color }
+                                ]}
+                                onPress={() => handleValueClick(note._id, note.title, note.content, note.color, note.image, note.date, note.photoUri)}
+                            >
+                                {(note.image || note.photoUri) ? (
+                                    <Image source={{ uri: note.image || note.photoUri }} style={styles.image} />
+                                ) : (
+                                    <View style={styles.showText}>
+                                        <Text style={styles.showText}>{note.title}</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                        ))
                     ) : (
-                        <Text>No notes available</Text> // Fallback if valueSave is empty or not an array
+                        <Text>No notes available</Text>
                     )}
                 </View>
             </ScrollView>
@@ -153,6 +152,7 @@ export default function AddNote() {
             </View>
 
             <View style={styles.bottomBar}>
+
                 <TouchableOpacity onPress={() => {/* Handle pencil icon action */}}>
                     <FontAwesome name="pencil" size={24} color="black" />
                 </TouchableOpacity>

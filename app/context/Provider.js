@@ -1,7 +1,8 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { Alert, View, Text, StyleSheet } from 'react-native';
 import axios from "axios";
-import NetInfo from "@react-native-community/netinfo"; // Import NetInfo
+import NetInfo from "@react-native-community/netinfo";
+import * as Notifications from "expo-notifications"; // Import NetInfo
 
 export const context = createContext();
 
@@ -77,6 +78,7 @@ export const AudioProvider = ({ children }) => {
         }
     };
 
+
     const getNotes = async () => {
         if (!isConnected) {
             Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
@@ -86,6 +88,7 @@ export const AudioProvider = ({ children }) => {
         try {
             const response = await axios.get('http://192.168.8.136:3000/api/notes');
             setValueSave(response.data);
+
         } catch (error) {
             console.error('Error fetching notes:', error);
             Alert.alert('Error', 'There was an issue fetching the notes.');

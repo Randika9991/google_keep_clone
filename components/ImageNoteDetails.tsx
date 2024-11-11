@@ -18,7 +18,7 @@ import DateTimeComponent from "./dateTime/DateTimeComponent";
 import {context} from "../app/context/Provider";
 
 const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePickImage,setPhotoUri}) => {
-    const {handleSaveNoteProvider} = useContext(context);
+    const {handleSaveNoteProvider,isConnected} = useContext(context);
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -34,38 +34,39 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
         if (title.trim() == '') {
 
         } else {
-            try {
-                handleSaveNoteProvider({ title, content, color, image, date, photoUri });
+            if (isConnected) {
+                try {
+                    handleSaveNoteProvider({ title, content, color, image, date, photoUri });
 
-                const dateString = String(date).trim();
-                const now = new Date();
-                if (dateString !== '') {
-                    console.log("Current local time:", now.toLocaleString());
-                    console.log("Scheduling notification for date:", date.toLocaleString());
+                    const dateString = String(date).trim();
+                    const now = new Date();
+                    if (dateString !== '') {
+                        console.log("Current local time:", now.toLocaleString());
+                        console.log("Scheduling notification for date:", date.toLocaleString());
 
-                    await Notifications.scheduleNotificationAsync({
-                        content: {
-                            title: "⏰ Alarm",
-                            body: "Your alarm is ringing!",
-                        },
-                        trigger: date, // Use the trigger date
-                    });
+                        await Notifications.scheduleNotificationAsync({
+                            content: {
+                                title: "⏰ Alarm",
+                                body: "Your alarm is ringing!",
+                            },
+                            trigger: date, // Use the trigger date
+                        });
+                    }
+                    // Reset fields after successful save
+                    setTitle('');
+                    setContent('');
+                    setColor('#F8F8F8');
+                    setImage(null);
+                    setDate(now);
+                    setShowColorPalette(false);
+                    setPhotoUri(null)
+                    onClose();
+
+                    // Show a success alert (optional)
+                } catch (error) {
+                    console.error('Error saving note:', error);
+                    Alert.alert("Error", "Failed to save the note. Please try again.");
                 }
-                // Reset fields after successful save
-                setTitle('');
-                setContent('');
-                setColor('#F8F8F8');
-                setImage(null);
-                setDate(now);
-                setShowColorPalette(false);
-                setPhotoUri(null)
-                onClose();
-
-                // Show a success alert (optional)
-                Alert.alert("Success", "Note saved successfully!");
-            } catch (error) {
-                console.error('Error saving note:', error);
-                Alert.alert("Error", "Failed to save the note. Please try again.");
             }
         }
     };
