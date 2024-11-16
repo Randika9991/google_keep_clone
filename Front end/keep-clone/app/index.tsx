@@ -6,8 +6,6 @@ import LodingPage from "../components/pages/loadingPage/LodingPage";
 import LoginScreen from "../components/pages/loginScreen/LoginScreen";
 import RegisterScreen from "../components/pages/loginScreen/Register";
 import home from "../app/pages/home";
-import {useFonts} from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import {AudioProvider} from './context/Provider'
 import * as Notifications from 'expo-notifications';
 import NotificationHandler from "../components/notification/NotificationHandler";
