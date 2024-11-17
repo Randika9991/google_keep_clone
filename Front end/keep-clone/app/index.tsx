@@ -50,7 +50,7 @@ export default function index() {
       <NavigationContainer independent={true}>
         <NotificationHandler />
         <AudioProvider>
-          <stack.Navigator initialRouteName={isAuthenticated ? 'home' : 'Loding-Page'}>
+          <stack.Navigator initialRouteName={isAuthenticated ? 'home' : 'Login-Page'}>
             <stack.Screen name='Loding-Page' component={LodingPage} options={{ headerShown: false }} />
             <stack.Screen name='Login-Page' component={LoginScreen} options={{ headerShown: false }} />
             <stack.Screen name='home' component={home} options={{ headerShown: false }} />

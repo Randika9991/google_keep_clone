@@ -26,7 +26,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     return (
         <View style={styles.pageContainer}>
             <View style={styles.header}>
-                <Icon name="chevron-left" size={30} color="white" onPress={() => navigation.goBack()} />
+                <Icon name="chevron-left" size={30} color="white" onPress={() => navigation.navigate('RegisterPage')} />
                 <Image
                     style={styles.headerImage}
                     source={{
@@ -63,8 +63,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 >
                     <Text style={styles.formButtonText}>SIGN IN</Text>
                 </TouchableOpacity>
-
-                           </View>
+            </View>
         </View>
     );
 };

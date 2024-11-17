@@ -65,7 +65,7 @@ const TakePhoto = ({ visible, onClose,photoUri,setPhotoUri,handleConfirmPhoto, }
                                     <Text style={styles.text}>Flip Camera</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.button} onPress={takePicture}>
-                                    <Text style={styles.text}>Capture</Text>
+                                    <Text style={styles.text}>photo</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.button} onPress={handleClose}>
                                     <Text style={styles.text}>Close</Text>

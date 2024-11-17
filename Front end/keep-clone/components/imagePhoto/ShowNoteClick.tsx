@@ -21,7 +21,6 @@ import {context} from "../../app/context/Provider";
 
 const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
     const {handleUpdateNoteProvider,handleDeleteNote,isConnected} = useContext(context);
-
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [color, setColor] = useState('#3d4242');
@@ -254,9 +253,10 @@ const styles = StyleSheet.create({
         zIndex: 2000,
         padding: 20,
         flex: 1,
-        borderTopWidth: 5,
-        borderLeftWidth: 5,
-        borderRightWidth: 5,
+        borderColor: Colors.dark.background2,
+        borderTopWidth: 2,
+        borderLeftWidth: 2,
+        borderRightWidth: 2,
     },
     modalBg: {
         position: 'absolute',
