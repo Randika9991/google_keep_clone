@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
     Modal,
     StyleSheet,
@@ -16,13 +16,15 @@ import * as ImagePicker from "expo-image-picker";
 import * as Notifications from 'expo-notifications';
 import DateTimeComponent from "./dateTime/DateTimeComponent";
 import {context} from "../app/context/Provider";
+import {onAuthStateChanged} from "firebase/auth";
+import {auth} from "./fireBase/firebaseConfig";
 
 const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePickImage,setPhotoUri}) => {
     const {handleSaveNoteProvider,isConnected} = useContext(context);
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [color, setColor] = useState('#FFFFFF');
+    const [color, setColor] = useState('#3d4242');
 
     const [showColorPalette, setShowColorPalette] = useState(false);
     const [date, setDate] = useState(new Date());
@@ -55,7 +57,7 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
                     // Reset fields after successful save
                     setTitle('');
                     setContent('');
-                    setColor('#F8F8F8');
+                    setColor('#3d4242');
                     setImage(null);
                     setDate(now);
                     setShowColorPalette(false);
@@ -71,6 +73,18 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
         }
     };
 
+    const closeFunction = () => {
+        const now = new Date();
+        setTitle('');
+        setContent('');
+        setColor('#3d4242');
+        setImage(null);
+        setDate(now);
+        setShowColorPalette(false);
+        setPhotoUri(null)
+        onClose();
+    };
+
     // Open the date picker first when scheduling an alarm
     const scheduleAlarm = () => {
         setShowDatePicker(true);
@@ -83,8 +97,8 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
     };
 
     return (
-        <Modal transparent={true} visible={visible} animationType="slide">
-            <TouchableWithoutFeedback onPress={onClose}>
+        <Modal transparent={true} visible={visible} animationType="fade">
+            <TouchableWithoutFeedback onPress={closeFunction}>
                 <View style={styles.modalBg} />
             </TouchableWithoutFeedback>
             <View style={styles.modal}>
@@ -95,19 +109,21 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
                 <View style={styles.content}>
                     <TextInput
                         placeholder="Title"
+
                         value={title}
                         onChangeText={setTitle}
-                        style={[styles.input, { backgroundColor: color }]}
+                        style={[styles.input, { backgroundColor: color,color:'white' }]}
                     />
                     <TextInput
                         placeholder="Note content"
+
                         value={content}
                         onChangeText={setContent}
                         multiline
-                        style={[styles.input, { backgroundColor: color, height: 100 }]}
+                        style={[styles.input, { backgroundColor: color, height: 100 ,color:'white'}]}
                     />
-                    {image && <Image source={{ uri: image }} style={styles.image} />}
-                    {photoUri && <Image source={{ uri: photoUri }} style={styles.image} />}
+                    {image  && <Image source={{ uri: image  }} style={styles.image} />}
+                    {photoUri  && <Image source={{ uri: photoUri  }} style={styles.image} />}
                 </View>
 
                 {/* Static Bottom Bar */}
@@ -121,7 +137,7 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
 
                     {showColorPalette && (
                         <View style={styles.colorPalette}>
-                            {['#FFF5BA', '#F5A9B8', '#B4E197', '#A7C7E7','#F8F8F8'].map((c) => (
+                            {['#9e6e16', '#6a9e16', '#9e1697', '#16999e'].map((c) => (
                                 <TouchableOpacity
                                     key={c}
                                     style={[styles.colorOption, { backgroundColor: c }]}
@@ -155,7 +171,7 @@ const ImageNoteDetails = ({ visible, onClose, image ,photoUri,setImage ,handlePi
                             setShowTimePicker={setShowTimePicker}
                             date={date}
                             setDate={setDate}
-                            setTimeDateVisible={setTimeDateVisible}
+                            setTimeDateVisible={()=>setTimeDateVisible}
                         />
                     )}
                 </View>
@@ -172,7 +188,7 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         top: 200,
-        backgroundColor: Colors.pastelBackgrounds.pastelWhite,
+        backgroundColor: Colors.dark.background,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
         zIndex: 2000,
@@ -186,6 +202,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerText: {
+        color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
     },
@@ -213,7 +230,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 5,
-        marginRight: 10,
+        marginRight: 10,borderColor: Colors.dark.background2,
     },
     iconButton: {
         padding: 10,
@@ -233,14 +250,14 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 48,
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
+        backgroundColor: Colors.dark.background2,
         shadowColor: '#000',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         shadowOpacity: 0.2,
         shadowRadius: 5,
-        borderTopWidth: 5,
+        borderTopWidth: 2,
     },
     colorPalette: {
         flexDirection: 'row',

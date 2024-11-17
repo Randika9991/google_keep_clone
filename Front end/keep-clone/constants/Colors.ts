@@ -18,6 +18,7 @@ export const Colors = {
   dark: {
     text: '#151718',
     background: '#151718',
+    background2: '#3d4242',
     tint: tintColorDark,
     icon: '#151718',
     tabIconDefault: '#9BA1A6',
@@ -34,7 +35,7 @@ export const Colors = {
     pastelBlue: '#A7C7E7',                   // Light pastel blue
     pastelGreen: '#B4E197',                  // Soft green, gentle on the eyes
     pastelPink: '#F5A9B8',                   // Friendly pink tone
-    pastelYellow: '#FFF5BA',                 // Soft yellow, good for highlighting without high contrast
+    pastelYellow: '#ffe200',                 // Soft yellow, good for highlighting without high contrast
     pastelPurple: '#C3B1E1',
     pastelWhite: '#F8F8F8',
   }

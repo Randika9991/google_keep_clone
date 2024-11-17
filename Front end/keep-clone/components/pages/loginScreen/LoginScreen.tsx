@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import { auth } from '../../fireBase/firebaseConfig'; // Import your firebaseConfig
 import { signInWithEmailAndPassword } from 'firebase/auth';
-
+import { Colors } from '../../../constants/Colors';
 const LoginScreen = ({ navigation }: { navigation: any }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -64,10 +64,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                     <Text style={styles.formButtonText}>SIGN IN</Text>
                 </TouchableOpacity>
 
-                <Pressable style={styles.recoverBtn}>
-                    <Text style={styles.headerText}>Recover Password</Text>
-                </Pressable>
-            </View>
+                           </View>
         </View>
     );
 };
@@ -116,14 +113,14 @@ const styles = StyleSheet.create({
     formButton: {
         width: '100%',
         height: 50,
-        backgroundColor: '#F3C623',
+        backgroundColor: Colors.pastelBackgrounds.pastelYellow,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 10,
     },
     formButtonText: {
-        color: 'white',
+        color: 'black',
         fontSize: 16,
         fontWeight: 'bold',
     },

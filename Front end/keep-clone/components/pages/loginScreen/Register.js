@@ -4,6 +4,7 @@ import { View, TextInput, Button, Text,StyleSheet,TouchableOpacity,Pressable } f
 import { auth } from '../../fireBase/firebaseConfig';
 import Icon from 'react-native-vector-icons/Feather';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {Colors} from "../../../constants/Colors";
 
 const Register = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -105,14 +106,14 @@ const styles = StyleSheet.create({
     formButton: {
         width: '100%',
         height: 50,
-        backgroundColor: '#F3C623',
+        backgroundColor: Colors.pastelBackgrounds.pastelYellow,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 10,
     },
     formButtonText: {
-        color: 'white',
+        color: 'black',
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -97,7 +97,7 @@ export default function AddNote() {
                 <View style={styles.headerMain}>
                     <Image
                         style={styles.tinyLogo}
-                        source={{ uri: 'https://img.icons8.com/?size=100&id=OTxpMqWbm71F&format=png&color=000000' }}
+                        source={{ uri: 'https://img.icons8.com/?size=100&id=0hHvb4pS3tau&format=png&color=000000' }}
                     />
                     <TextInput
                         placeholder="Search your notes"
@@ -134,7 +134,7 @@ export default function AddNote() {
                             </TouchableOpacity>
                         ))
                     ) : (
-                        <Text>No notes available</Text>
+                        <Text style={styles.showText}>No notes available</Text>
                     )}
                 </View>
             </ScrollView>
@@ -152,7 +152,6 @@ export default function AddNote() {
             </View>
 
             <View style={styles.bottomBar}>
-
                 <TouchableOpacity onPress={() => {/* Handle pencil icon action */}}>
                     <FontAwesome name="pencil" size={24} color="black" />
                 </TouchableOpacity>
@@ -203,27 +202,27 @@ export default function AddNote() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.pastelBackgrounds.pastelWhite,
+        backgroundColor: Colors.dark.background,
     },
-    headerContainer: {
-        zIndex: 3,
-        height: 80,
-        top: 20,
-        backgroundColor: Colors.pastelBackgrounds.pastelWhite,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
+    headerContainer:{
+        zIndex:1,
+        height:75,
     },
     headerMain: {
-        width: '100%',
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
+        top:20,
+        width: '95%',
+
+        right:10,
+        left:10,
+        backgroundColor: Colors.dark.background2,
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
-        borderWidth: 5,
+        borderColor:Colors.dark.text,
+        borderBottomColor:Colors,
+        borderWidth: 2,
     },
     plusLogo: {
         width: 30,
@@ -235,13 +234,14 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
     searchInput: {
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
+        backgroundColor: Colors.dark.background2,
+        color:Colors.pastelBackgrounds.pastelWhite,
         borderRadius: 8,
         padding: 8,
         width: '70%',
     },
     content: {
-        marginTop: 18, // Adjust content placement below header
+        marginTop: 10, // Adjust content placement below header
         padding: 20,
     },
     modalText:{
@@ -278,15 +278,13 @@ const styles = StyleSheet.create({
         bottom: 0,
         width: '100%',
         height: 60,
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
-        shadowColor: '#000',
+        backgroundColor: Colors.dark.background2,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingHorizontal: 20,
         shadowOpacity: 0.2,
-        shadowRadius: 5,
-        borderTopWidth: 5,
+        borderTopWidth:2,
     },
     bottomBarRightSide: {
         zIndex: 2,
@@ -296,12 +294,12 @@ const styles = StyleSheet.create({
         width: '20%',
         right: 40,
         height: 60,
-        backgroundColor: Colors.pastelBackgrounds.pastelGreen,
+        backgroundColor: Colors.dark.background2,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingHorizontal: 20,
-        borderWidth: 5,
+        borderWidth: 2,
     },
     notesContainer: {
         flexDirection: 'row',
@@ -314,6 +312,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         padding: 10,
         borderRadius: 10,
+        borderColor:Colors.dark.background2,
         borderWidth: 2,
     },
     image: {
@@ -331,6 +330,7 @@ const styles = StyleSheet.create({
     showText:{
         width: '100%', // Adjust size based on your design
         borderRadius: 8,
+        color: 'white',
         marginBottom: 10,
     }
 });

@@ -20,13 +20,12 @@ import DateTimeComponent from "./dateTime/DateTimeComponent";
 import { context } from '../app/context/Provider';
 import PhotoCameraComponent from "./imagePhoto/PhotoCameraComponent";
 import TakePhoto from "./imagePhoto/TakePhoto";
+
 const NoteDetail = ({ visible, onClose, note }) => {
-
     const {handleSaveNoteProvider,isConnected} = useContext(context);
-
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [color, setColor] = useState('#FFFFFF');
+    const [color, setColor] = useState('#3d4242');
     const [image, setImage] = useState<string | null>(null);
     const [showColorPalette, setShowColorPalette] = useState(false);
     const [date, setDate] = useState(new Date());
@@ -101,7 +100,7 @@ const NoteDetail = ({ visible, onClose, note }) => {
                     // Reset fields after successful save
                     setTitle('');
                     setContent('');
-                    setColor('#F8F8F8');
+                    setColor('#3d4242');
                     setImage(null);
                     setDate(now);
                     setShowColorPalette(false);
@@ -124,7 +123,7 @@ const NoteDetail = ({ visible, onClose, note }) => {
     };
 
     return (
-        <Modal transparent={true} visible={visible} animationType="slide">
+        <Modal transparent={true} visible={visible} animationType="fade">
             <TouchableWithoutFeedback onPress={() => onClose()}>
                 <View style={styles.modalBg} />
             </TouchableWithoutFeedback>
@@ -137,16 +136,17 @@ const NoteDetail = ({ visible, onClose, note }) => {
                 <View style={styles.content}>
                     <TextInput
                         placeholder="Title"
+
                         value={title}
                         onChangeText={setTitle}
-                        style={[styles.input, { backgroundColor: color }]}
+                        style={[styles.input, { backgroundColor:color }]}
                     />
                     <TextInput
                         placeholder="Note content"
                         value={content}
                         onChangeText={setContent}
                         multiline
-                        style={[styles.input, { backgroundColor: color, height: 100 }]}
+                        style={[styles.input, { backgroundColor: color, height: 100 ,color:'white'}]}
                     />
                     {image  && <Image source={{ uri: image  }} style={styles.image} />}
                     {photoUri  && <Image source={{ uri: photoUri  }} style={styles.image} />}
@@ -163,7 +163,7 @@ const NoteDetail = ({ visible, onClose, note }) => {
 
                     {showColorPalette && (
                         <View style={styles.colorPalette}>
-                            {['#FFF5BA', '#F5A9B8', '#B4E197', '#A7C7E7','#F8F8F8'].map((c) => (
+                            {['#9e6e16', '#6a9e16', '#9e1697', '#16999e'].map((c) => (
                                 <TouchableOpacity
                                     key={c}
                                     style={[styles.colorOption, { backgroundColor: c }]}
@@ -228,21 +228,21 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         top: 200,
-        backgroundColor: Colors.pastelBackgrounds.pastelWhite,
+        backgroundColor: Colors.dark.background,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
         zIndex: 2000,
         padding: 20,
         flex: 1,
-        borderTopWidth: 5,
-        borderLeftWidth: 5,
-        borderRightWidth: 5,
+        borderWidth:2,
+        borderColor:Colors.dark.background2,
     },
     headerContainer: {
         alignItems: 'center',
     },
     headerText: {
         fontSize: 18,
+        color:'white',
         fontWeight: 'bold',
     },
     content: {
@@ -261,13 +261,18 @@ const styles = StyleSheet.create({
         padding: 8,
         fontSize: 16,
         marginVertical: 5,
-        borderColor: Colors.dark.background,
+        backgroundColor: 'rgba(234,5,5,0.8)', // Slightly transparent background for better visibility
+        borderColor: Colors.dark.background2, // Visible border color
         borderWidth: 1,
         borderRadius: 5,
+        color: 'white', // Ensure input text is visible
+        borderStyle: 'solid', // Explicitly set border style
     },
+
     colorOption: {
         width: 30,
         height: 30,
+        borderColor: Colors.dark.background2,
         borderRadius: 5,
         marginRight: 10,
     },
@@ -289,14 +294,14 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 48,
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
+        backgroundColor: Colors.dark.background2,
         shadowColor: '#000',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         shadowOpacity: 0.2,
         shadowRadius: 5,
-        borderTopWidth: 5,
+        borderTopWidth: 2,
     },
     colorPalette: {
         flexDirection: 'row',
@@ -305,7 +310,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         borderRadius: 20,
         borderColor:Colors.pastelBackgrounds.pastelGreen,
-
     },
 });
 

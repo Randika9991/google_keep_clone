@@ -7,7 +7,7 @@ const PhotoCameraComponent = ({ visible, onClose,handlePickImage,actionCamera}) 
     return (
         <Modal
             transparent={true}
-            animationType="slide"
+            animationType="fade"
             visible={visible}
         >
             <TouchableWithoutFeedback onPress={onClose}>
@@ -42,20 +42,20 @@ const styles = StyleSheet.create({
         bottom: '30%',
         left: '10%',
         right: '10%',
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
+        backgroundColor: Colors.dark.background2,
         padding: 20,
         borderRadius: 20,
         alignItems: 'center', // Center items horizontally
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 10,
-        borderWidth: 5,
+        borderWidth: 2,
     },
     modalHeaderText: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: 'black',
+        color: 'white',
     },
     actionButton: {
         flexDirection: 'row',
@@ -63,9 +63,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 15,
         width: '90%',
-        backgroundColor: Colors.pastelBackgrounds.pastelGreen,
+        backgroundColor: Colors.dark.background2,
         borderRadius: 10,
         marginBottom: 10,
+        borderWidth:2
     },
     textModal: {
         marginLeft: 10,

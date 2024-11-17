@@ -53,7 +53,7 @@ const TakePhoto = ({ visible, onClose,photoUri,setPhotoUri,handleConfirmPhoto, }
     return (
         <Modal
             transparent={true}
-            animationType="slide"
+            animationType="fade"
             visible={visible}
         >
             <View style={styles.modalBg}>

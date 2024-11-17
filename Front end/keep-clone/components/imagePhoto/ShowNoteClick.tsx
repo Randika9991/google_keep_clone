@@ -24,7 +24,7 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [color, setColor] = useState('#FFFFFF');
+    const [color, setColor] = useState('#3d4242');
     const [image, setImage] = useState<string | null>(null);
     const [showColorPalette, setShowColorPalette] = useState(false);
     const [date, setDate] = useState(new Date());
@@ -133,7 +133,7 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
     return (
         <Modal
             transparent={true}
-            animationType="slide"
+            animationType="fade"
             visible={visible}
         >
             <TouchableWithoutFeedback onPress={onClose}>
@@ -146,23 +146,24 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
                             <Text style={styles.headerText}>Note</Text>
                         </View>
 
-                        <View style={[styles.content]}>
+                        <View style={styles.content}>
                             <TextInput
                                 placeholder="Title"
                                 value={title}
                                 onChangeText={setTitle}
-                                style={[styles.input, { backgroundColor: color }]}
+                                style={[styles.input, { backgroundColor: color,color:'white' }]}
                             />
                             <TextInput
                                 placeholder="Note content"
                                 value={content}
                                 onChangeText={setContent}
                                 multiline
-                                style={[styles.input, styles.contentInput, { backgroundColor: color }]}
+                                style={[styles.input, { backgroundColor: color, height: 100 ,color:'white'}]}
                             />
-                            {image && <Image source={{ uri: image }} style={styles.image} />}
-                            {photoUri && <Image source={{ uri: photoUri }} style={styles.image} />}
+                            {image  && <Image source={{ uri: image  }} style={styles.image} />}
+                            {photoUri  && <Image source={{ uri: photoUri  }} style={styles.image} />}
                         </View>
+
                         <View style={styles.bottomBar}>
                             <TouchableOpacity onPress={() => setShowColorPalette(!showColorPalette)} style={styles.iconButton}>
                                 <MaterialIcons name="palette" size={24} color="black" />
@@ -170,7 +171,7 @@ const ShowNoteClick = ({ visible, onClose, allValueShow }) => {
 
                             {showColorPalette && (
                                 <View style={styles.colorPalette}>
-                                    {['#FFF5BA', '#F5A9B8', '#B4E197', '#A7C7E7', '#F8F8F8'].map((c) => (
+                                    {['#9e6e16', '#6a9e16', '#9e1697', '#16999e'].map((c) => (
                                         <TouchableOpacity
                                             key={c}
                                             style={[styles.colorOption, { backgroundColor: c }]}
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         top: 200,
-        backgroundColor: Colors.pastelBackgrounds.pastelWhite,
+        backgroundColor: Colors.dark.background,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
         zIndex: 2000,
@@ -271,6 +272,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 18,
+        color: 'white',
         fontWeight: 'bold',
     },
     content: {
@@ -292,6 +294,7 @@ const styles = StyleSheet.create({
     colorOption: {
         width: 30,
         height: 30,
+        borderColor: Colors.dark.background2,
         borderRadius: 5,
         marginRight: 10,
     },
@@ -313,14 +316,14 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 48,
-        backgroundColor: Colors.pastelBackgrounds.pastelPurple,
+        backgroundColor: Colors.dark.background2,
         shadowColor: '#000',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         shadowOpacity: 0.2,
         shadowRadius: 5,
-        borderTopWidth: 5,
+        borderTopWidth: 2,
     },
     colorPalette: {
         flexDirection: 'row',
