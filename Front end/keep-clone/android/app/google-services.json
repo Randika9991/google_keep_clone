@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672902537356",
+    "project_id": "keepclone-fa10c",
+    "storage_bucket": "keepclone-fa10c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672902537356:android:126befe290e999c9955ba9",
+        "android_client_info": {
+          "package_name": "com.yourcompany.keepclone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg80XRWZPpEyo21A3ce0aNHNt5mGwdXOw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

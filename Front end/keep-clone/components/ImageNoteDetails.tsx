@@ -194,9 +194,10 @@ const styles = StyleSheet.create({
         zIndex: 2000,
         padding: 20,
         flex: 1,
-        borderTopWidth: 5,
-        borderLeftWidth: 5,
-        borderRightWidth: 5,
+        borderColor:Colors.dark.background2,
+        borderTopWidth: 2,
+        borderLeftWidth: 2,
+        borderRightWidth: 2,
     },
     headerContainer: {
         alignItems: 'center',

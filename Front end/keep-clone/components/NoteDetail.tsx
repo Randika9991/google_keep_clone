@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     },
     bottomBar: {
         position: 'absolute',
-        bottom: 0,
+        bottom: -2,
         left: 0,
         right: 0,
         height: 48,

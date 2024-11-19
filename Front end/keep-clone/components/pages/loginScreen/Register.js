@@ -1,27 +1,45 @@
 // Register.js
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text,StyleSheet,TouchableOpacity,Pressable } from 'react-native';
-import { auth } from '../../fireBase/firebaseConfig';
+// import { auth } from '../../fireBase/firebaseConfig';
 import Icon from 'react-native-vector-icons/Feather';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+// import auth from '@react-native-firebase/auth'
+import { getDatabase, ref, set } from 'firebase/database';
+// import db from '@react-native-firebase/database';
+
+import { getAuth,createUserWithEmailAndPassword } from 'firebase/auth';
 import {Colors} from "../../../constants/Colors";
 
+const createProfile = async (response, name) => {
+    const userId = response.user.uid;
+    const db = getDatabase();
+    await set(ref(db, `/users/${userId}`), {
+        name: name || 'New User', // Fallback to 'New User' if no name is provided
+        leaderboard: { totalSteps: 0 }
+    });
+};
+
 const Register = ({ navigation }) => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleRegister = async () => {
+
         setError('');
-        if (email.trim() === '' || password.trim() === '') {
-            setError('Email and password cannot be empty.');
+        if (name.trim() === '' || email.trim() === '' || password.trim() === '') {
+            setError('Name, Email, and Password cannot be empty.');
             return;
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            alert('Registration Successful');
-            navigation.navigate('Login-Page');
+            const auth = getAuth();
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            if (response.user) {
+                await createProfile(response,name);
+                navigation.navigate('Login-Page');
+            }
         } catch (error) {
             // console.log(error);
             alert(error);
@@ -36,6 +54,15 @@ const Register = ({ navigation }) => {
             </View>
 
             <View style={styles.formContainer}>
+                <View style={styles.formField}>
+                    <TextInput
+                        style={styles.formInput}
+                        placeholder="Name"
+                        placeholderTextColor="grey"
+                        value={name}
+                        onChangeText={setName}
+                    />
+                </View>
                 <View style={styles.formField}>
                     <TextInput
                         style={styles.formInput}

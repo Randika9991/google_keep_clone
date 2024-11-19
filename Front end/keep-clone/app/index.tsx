@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -10,10 +9,10 @@ import {AudioProvider} from './context/Provider'
 import * as Notifications from 'expo-notifications';
 import NotificationHandler from "../components/notification/NotificationHandler";
 
-import { auth } from '../components/fireBase/firebaseConfig'; // Import your Firebase config
-import { onAuthStateChanged } from 'firebase/auth';
 
 const stack = createNativeStackNavigator()
+
+import '../components/fireBase/firebaseConfig';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -25,32 +24,11 @@ Notifications.setNotificationHandler({
 
 export default function index() {
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    // Listen to authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsAuthenticated(true); // User is logged in
-      } else {
-        setIsAuthenticated(false); // User is logged out
-      }
-    });
-
-    // Cleanup listener
-    return () => unsubscribe();
-  }, []);
-
-  if (isAuthenticated === null) {
-    // Optionally, show a loading screen while the auth state is being determined
-    return <LodingPage />;
-  }
-
   return (
       <NavigationContainer independent={true}>
-        <NotificationHandler />
+        <NotificationHandler/>
         <AudioProvider>
-          <stack.Navigator initialRouteName={isAuthenticated ? 'home' : 'Login-Page'}>
+          <stack.Navigator initialRouteName={'Loding-Page'}>
             <stack.Screen name='Loding-Page' component={LodingPage} options={{ headerShown: false }} />
             <stack.Screen name='Login-Page' component={LoginScreen} options={{ headerShown: false }} />
             <stack.Screen name='home' component={home} options={{ headerShown: false }} />

@@ -1,9 +1,13 @@
+import { auth } from '../../fireBase/firebaseConfig'; // Import your firebaseConfig
+// import { getAuth,createUserWithEmailAndPassword } from 'firebase/auth';
 import { StyleSheet, Text, View, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import { auth } from '../../fireBase/firebaseConfig'; // Import your firebaseConfig
 import { signInWithEmailAndPassword } from 'firebase/auth';
+
 import { Colors } from '../../../constants/Colors';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const LoginScreen = ({ navigation }: { navigation: any }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -15,11 +19,47 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 setError('Email and password are required');
                 return;
             }
-            await signInWithEmailAndPassword(auth, email, password);
-            navigation.navigate('home');  // Navigate to the home screen after successful login
-        } catch (err) {
-            setError('Login failed. Please check your credentials.');
-            console.error(err.message);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setError('Please enter a valid email address');
+                return;
+            }
+            try {
+                // const auth = getAuth();
+                await signInWithEmailAndPassword(auth, email, password);
+                navigation.navigate('home');
+
+                await AsyncStorage.setItem('user', JSON.stringify({
+                    email: userCredential.user.email,
+                    loggedIn: true,
+                }));
+
+            } catch (err: any){
+                switch (err.code) {
+                    case 'auth/invalid-email':
+                        setError('The email address is not valid. Please check and try again.');
+                        break;
+                    case 'auth/user-disabled':
+                        setError('This account has been disabled. Please contact support.');
+                        break;
+                    case 'auth/user-not-found':
+                        setError('No account found with this email. Please sign up.');
+                        break;
+                    case 'auth/wrong-password':
+                        setError('Incorrect password. Please try again.');
+                        break;
+                    case 'auth/invalid-credential':
+                        setError('Incorrect credential. Please try again.');
+                        break;
+                    default:
+                        setError('Login failed. Please check your credentials.');
+                        break;
+                }
+            }
+             // Navigate to the home screen after successful login
+        } catch (err: any) {
+            // Handle specific Firebase errors
+            console.error(err.code); // Log the actual error for debugging purposes
         }
     };
 
